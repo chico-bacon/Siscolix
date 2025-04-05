@@ -1,0 +1,36 @@
+<body>
+    <%- include('cabecalho') %>
+
+    <main class="main_login">
+        <div class="div_tituloFormularioLogin">
+            <h1>FAÇA SEU LOGIN</h1>
+        </div>
+        <div class="div_formularioLogin">
+            <!-- <form action="admin" method="post"> -->
+            <form action="/login" method="get">
+                <div class="div_campoForm">
+                    <label for="username">Usuário</label>
+                    <input type="text" name="username" id="username"/>
+                </div>
+                <div class="div_campoForm">
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" id="senha"/>
+                </div>
+                <div class="div_rodapeFormularioLogin">
+                    <button id="botao_login" class="botao_padrao">Login</button>
+                    <button id="botao_limpar" class="botao_padrao">Limpar</button>
+                    <!-- <button id="botao_login" class="botao_padrao"><a href="admin">Login</a></button>
+                    <button id="botao_limpar" class="botao_padrao">Limpar</button> -->
+                </div>
+            </form>
+        </div>
+        <!-- <div class="div_rodapeFormularioLogin">
+            <button id="botao_login" class="botao_padrao">Login</button>
+            <button id="botao_limpar" class="botao_padrao">Limpar</button>
+            <button id="botao_login" class="botao_padrao"><a href="admin">Login</a></button>
+            <button id="botao_limpar" class="botao_padrao">Limpar</button>
+        </div> -->
+    </main>
+    <%- include('rodape') %>
+</body>
+</html>

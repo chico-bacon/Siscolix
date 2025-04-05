@@ -1,0 +1,388 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head> -->
+<body>
+    <%- include('cabecalho') %>
+
+    <main class="main_administracao">
+        <div class="div_tituloAdministracao">
+            <div class="div_menuCadastroAdministracao">
+                <a href="administracao"><img src="/imagens/icons/left.svg" alt="" title="Voltar Para Pagina Administração"></a>
+            </div>
+
+            <div class="div_filtro">
+                <div>
+                    <label for="input_filtroNome">Filtrar Por Nome:</label>
+                </div>
+                <input type="text" name="input_filtroNome" id="input_filtroNome">
+            </div>
+            <div class="div_logofConfiguracao">
+                <a href="#" target="_self"><img src="imagens/icons/search.svg" alt="" title="Pesquisar"></a>
+                <a href="#" target="_self"><img src="/imagens/icons/print.svg" alt="" title="Imprimir"></a>
+                <a href="areaRestrita" target="_self"><img src="/imagens/icons/logout.svg" alt="" title="Efetuar Logof"></a>
+                <a href="pagina_em_desenvolvimento" target="_self"><img src="/imagens/icons/settings.svg" alt="" title="Configurações"></a>
+            </div>
+        </div>
+        <div class="div_frameCadastroUsuarios">
+            <section class="sessao_cadastroUsuarios">
+
+                <div id="div_tituloFormularioUsuarios" class="div_tituloFormularioUsuarios">
+                    <h2>CADASTRO DE USUÁRIOS</h2>
+                </div>
+                <div class="div_formularioUsuarios">
+
+                    <!-- <form id='form-usuario' action="/usuarios" method="post" onsubmit="event.preventDefault(); processaForm(this);"> -->
+                    <form id='form_usuario' action="/usuarios" method="post" onsubmit="event.preventDefault(); processaForm(this);">
+                        <div class="div_campoForm"> 
+                            <label for="nome">Nome</label>
+                            <input type="text" name="nome" id="nome">
+                        </div>
+                        <div class="div_campoForm">
+                            <label for="username">Usuário</label>
+                            <input type="text" name="username" id="username">
+                        </div>
+                        <div class="div_campoForm">
+                            <label for="senha">Senha</label>
+                            <input type="password" name="senha" id="senha">
+                        </div>
+                        <div class="div_campoForm2">
+                            <div class="div_campoForm">
+                                <label for="select_permissao">Tipo Permissão</label>
+                                <select name="permissao" id="permissao" size="1">
+                                    <option value="1">Master</option>
+                                    <option value="2">Admin</option>
+                                    <option value="3">Gerente</option>
+                                    <option value="4">Operador</option>
+                                    <option value="5">Consulta</option>
+                                </select>
+                            </div>
+                            <div class="div_campoForm">
+                                <label for="situacao">Situação</label>
+                                <select name="situacao" id="situacao" size="1">
+                                    <option value="A">Ativo</option>
+                                    <option value="I">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="div_rodapeFormularioUsuarios">
+                            <button id="botao_gravar" class="botao_padrao">Gravar</button>
+                            <!-- <div id="botao_limpar" class="botao_padrao">Limpar</div>   botaoGravar --> 
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="sessao_grid">
+                <div class="div_tituloGrid">
+                    <h2>Lista de Usuários Cadastrados</h2>
+                </div>
+                <div class="div_cabecalhoGrid">
+                    <div class="div_Cabecalhocoluna0">Id</div>
+                    <div class="div_Cabecalhocoluna1">Nome</div>
+                    <div class="div_Cabecalhocoluna2">Usuário</div>
+                    <div class="div_Cabecalhocoluna3">Tipo Acesso</div>
+                    <div class="div_Cabecalhocoluna4">Situação</div>
+                    <div class="div_Cabecalhocoluna5">Ação</div>
+                </div>
+                <!--   -->
+                <div id="div_corpoGrid" class="div_corpoGrid">
+
+                </div>
+                <div class="div_rodapeGrid">
+                    <h3 id='total_registros'>Total de Registros: 0</h3>
+                    <!-- <h3>Qtde de Registros Ativos: 03</h3>
+                    <h3>Qtde de Registros Inativos: 01</h3> -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        class UsuariosStoreAbstrato {
+            async procurarPorId(id) {
+                let usuarios = await this.listar(); 
+                try {
+                    return usuarios.filter(p => p.id == id)[0];
+                } catch {
+                    return null;
+                }
+            }
+        }
+
+        class UsuariosStoreArray extends UsuariosStoreAbstrato {
+            usuarios = [];
+            async inserir(usuario) {
+                this.usuarios.push(usuario);
+                usuario.id = this.usuarios.length;
+            }
+            async listar() {
+                return this.usuarios;
+            }
+            async alterarDados(id, novosDados){
+                 this.usuarios.forEach(usuario =>{
+                    if (usuario.id==id){
+                        usuario.nome=novosDados.nome;
+                        usuario.permissao=novosDados.permissao;
+                        usuario.senha=novosDados.senha;
+                        usuario.situacao=novosDados.situacao;
+                        usuario.username=novosDados.username;
+                    };
+                 });
+            }
+            async apagar(id){
+                let tUsuarios = await this.usuarios;
+                tUsuarios.splice(tUsuarios.id, 1);
+            }
+        }
+
+        class UsuariosStoreFetch extends UsuariosStoreAbstrato {
+            constructor(url) {
+                super();
+                this.url = url;
+            }
+            async inserir(usuario) {
+                let response = await fetch(this.url, {
+                    method: 'post',     
+                    body: new URLSearchParams(usuario), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 201) {
+                    let novoUsuario = await response.json();
+                    usuario.id = novoUsuario.id;
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+            async listar() {
+                let response = await fetch(this.url);
+                return await response.json();
+            }
+            async procurarPorId(id) {
+                let response = await fetch(this.url + '/' + id);
+                console.log(response)
+                return await response.json();
+            }
+
+            async apagar(id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'delete'
+                });
+            }
+
+            async alterar(usuario, id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'put', 
+                    body: new URLSearchParams(usuario), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 200) {
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+
+        }
+
+        async function limpaCampos() {
+            let form = document.querySelector('form');
+            form.nome.value = '';
+            form.username.value = '';
+            form.senha.value = '';
+            form.permissao.value = '';
+            form.situacao.value = '';
+        }
+        let botaoGravar = 1;
+        let idUsuarioAlterar = -1
+
+        // let usuariosStore = new UsuariosStoreArray();
+        let usuariosStore = new UsuariosStoreFetch('http://localhost:3000/usuarios');
+
+        async function processaForm(form) {
+            let nome = form.nome.value;
+            let username = form.username.value;
+            let senha = form.senha.value;
+            let permissao = form.permissao.value;
+            let situacao = form.situacao.value;
+            try {
+                if (botaoGravar==1){
+                    await usuariosStore.inserir({nome, username, senha, permissao, situacao});
+                }else{
+                    let novosDados = {nome, username, senha, permissao, situacao};
+                    await usuariosStore.alterarDados(idUsuarioAlterar, novosDados);
+                    botaoGravar = 1;
+                }
+                limpaCampos()
+                mostrarLista();
+            } catch(erro) {
+                alert(erro);
+            }
+        }
+
+        async function mostrarLista() {
+            const form = document.querySelector('form');
+            const div_corpoGrid = document.querySelector('#div_corpoGrid');
+            div_corpoGrid.innerHTML = '';
+
+            let usuarios = await usuariosStore.listar();
+            let usuariosAtivos  = 0;
+            let usuariosInativos = 0;
+            let total_registros = usuarios.length;
+            let h3_total_registros = document.querySelector('#total_registros');
+
+            usuarios.forEach(usuario =>{
+                let id = usuario.id
+                let nome = usuario.nome;
+                let username = usuario.username;
+                let senha = usuario.senha;
+                let permissao = usuario.permissao;
+                let situacao = usuario.situacao;
+
+                const div_linha = document.createElement('div');
+                div_linha.setAttribute('id','div_linhaDadosGrid');
+                div_linha.setAttribute('class','div_linhaDadosGrid');
+
+                const div_id = document.createElement('div');
+                div_id.innerHTML = id;
+                div_linha.appendChild(div_id);
+
+                const div_nome = document.createElement('div');
+                div_nome.innerHTML = nome;
+                div_linha.appendChild(div_nome);
+
+                const div_username = document.createElement('div');
+                div_username.innerHTML = username;
+                div_linha.appendChild(div_username);
+
+                const div_permissao = document.createElement('div');
+                switch(permissao){
+                    case '1':
+                        div_permissao.innerHTML = 'Master';
+                        break;
+                    case '2':
+                        div_permissao.innerHTML = 'Admin';
+                        break;
+                    case '3':
+                        div_permissao.innerHTML = 'Gerente';
+                        break;
+                    case '4':
+                        div_permissao.innerHTML = 'Gerente';
+                        break;
+                    case '5':
+                        div_permissao.innerHTML = 'Consulta';
+                        break;
+                };
+                div_linha.appendChild(div_permissao);
+
+                const div_situacao = document.createElement('div');
+                div_situacao.setAttribute('class', 'div_situacao'); 
+                const div_valorSituacao = document.createElement('div');
+                div_valorSituacao.innerHTML = situacao;
+                div_situacao.appendChild(div_valorSituacao);
+
+                const div_imgSituacao = document.createElement('div');
+                const img_situacao = document.createElement('img');
+                img_situacao.setAttribute('class', 'icone');
+                if (situacao=='A'){
+                    img_situacao.setAttribute('src', '/imagens/icons/ativar.svg');
+                    usuariosAtivos+=1;
+                } else {
+                    img_situacao.setAttribute('src', '/imagens/icons/desativar.svg');
+                    usuariosInativos+=1;
+                }
+                div_situacao.appendChild(img_situacao);
+                div_linha.appendChild(div_situacao);
+
+                const div_acoes = document.createElement('div');
+                div_acoes.setAttribute('class', 'div_acao');
+
+                const div_limpar = document.createElement('div');
+                const img_limpar = document.createElement('img');
+                img_limpar.setAttribute('class', 'icone');
+                img_limpar.setAttribute('src', '/imagens/icons/passwordoff.svg');
+                img_limpar.setAttribute('title', 'Limpar Senha');
+                div_acoes.appendChild(img_limpar);
+                // div_linha.appendChild(div_acoes);
+
+                const div_editar = document.createElement('div');
+                const img_editar = document.createElement('img');
+                img_editar.setAttribute('class', 'icone');
+                img_editar.setAttribute('src', '/imagens/icons/editar.svg');
+                img_editar.setAttribute('title', 'Editar');
+                img_editar.addEventListener('click',(evt)=>{
+                    const idUsuario=evt.target.parentNode.parentNode.firstChild.innerHTML;
+                    console.log(idUsuario)
+                    idUsuarioAlterar = idUsuario;
+                    botaoGravar = 2;
+                    alterar(idUsuario);
+                })
+                div_acoes.appendChild(img_editar);
+                // div_linha.appendChild(div_acoes);
+
+                const div_excluir = document.createElement('div');
+                const img_excluir = document.createElement('img');
+                img_excluir.setAttribute('class', 'icone');
+                img_excluir.setAttribute('src', '/imagens/icons/deletar.svg');
+                img_excluir.setAttribute('title', 'Excluir');
+                img_excluir.addEventListener('click',(evt)=>{
+                    console.log('Entrou no excluir')
+                    const idUsuario=evt.target.parentNode.parentNode.firstChild.innerHTML;
+                    console.log('chamou o id:')
+                    console.log(idUsuario)
+
+                    apagar(idUsuario);
+                })
+                div_acoes.appendChild(img_excluir);
+                div_linha.appendChild(div_acoes);
+                div_corpoGrid.appendChild(div_linha);
+            // }
+            });
+
+            h3_total_registros.innerHTML = 'Total de Registros: ' + total_registros + ' - Total de Usuários Ativos: ' + usuariosAtivos + ' - Total de Usuários Inativos: ' + usuariosInativos;
+
+            // let lista_usuarios = await usuariosStore.listar();
+            // console.log(lista_usuarios);
+
+
+        }
+
+        async function alterar(id) {
+            console.log(id);
+            let usuario = await usuariosStore.procurarPorId(id);
+            console.log(usuario);
+            let form = document.querySelector('form');
+            form.nome.value = usuario.nome;
+            form.username.value = usuario.username;
+            form.senha.value = usuario.senha;
+            form.permissao.value = usuario.permissao;
+            form.situacao.value = usuario.situacao;
+        }
+
+        async function apagar(idUsuario){
+            console.log('entrou na função apagar')
+            console.log('id do usuário dentro da função apagar')
+            console.log(idUsuario);
+            await usuariosStore.apagar(idUsuario);
+            mostrarLista();
+        }
+
+        mostrarLista();
+    
+    </script>
+
+<!--Rodapé-->
+    <%- include('rodape') %>
+    <!-- <footer>
+        <p>Todos Os Direitos Reservados: Claudio Tadeu Severino - Trabalho de Desenvolvimento HTML - CSS - IFCE - Curso de Informática Para Web - Disciplina: Desenvolvimento WEB I - Unidade 5</p>
+    </footer> -->
+</body>
+</html>

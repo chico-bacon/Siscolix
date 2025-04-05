@@ -1,0 +1,190 @@
+<body>
+    <%- include('cabecalho') %>
+
+    <main class="main_contribuintes">
+        <div class="div_frameCadastroContribuintes">
+            <section class="sessao_cadastrocontribuintes">
+                <div id="div_tituloFormulariocontribuintes" class="div_tituloFormulariocontribuintes">
+                    <h2>CADASTRO DE CONTRIBUINTES</h2>
+                </div>
+                <div class="div_formulariocontribuintes">
+                    <form id='form_contribuintes' action="/contribuintes" method="post" onsubmit="event.preventDefault(); processaForm(this);">
+                        <div class="div_campoForm"> 
+                            <label for="nome">Nome</label>
+                            <input type="text" name="nome" id="nome">
+                        </div>
+                        <div class="div_campoForm"> 
+                            <label for="fone">Fone</label>
+                            <input type="text" name="fone" id="fone">
+                        </div>
+                        <div class="div_campoForm">
+                            <label for="email">email</label>
+                            <input type="text" name="email" id="email">
+                        </div>
+                        <div class="div_campoForm">
+                            <label for="senha">Senha</label>
+                            <input type="password" name="senha" id="senha">
+                        </div>
+                        <div class="div_rodapeFormulariocontribuintes">
+                            <button id="botao_gravar" class="botao_padrao">Gravar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        class ContribuintesStoreAbstrato {
+            async procurarPorId(id) {
+                let contribuintes = await this.listar(); 
+                try {
+                    return contribuintes.filter(p => p.id == id)[0];
+                } catch {
+                    return null;
+                }
+            }
+        }
+
+        class ContribuintesStoreArray extends ContribuintesStoreAbstrato {
+            contribuintes = [];
+            async inserir(contribuinte) {
+                this.contribuintes.push(contribuinte);
+                contribuinte.id = this.contribuintes.length;
+            }
+            async listar() {
+                return this.contribuintes;
+            }
+            async alterarDados(id, novosDados){
+                 this.contribuintes.forEach(contribuinte =>{
+                    if (contribuinte.id==id){
+                        contribuinte.nome=novosDados.nome;
+                        contribuinte.fone=novosDados.fone;
+                        contribuinte.email=novosDados.email;
+                        contribuinte.senha=novosDados.senha;
+                    };
+                 });
+            }
+            async apagar(id){
+                let tcontribuintes = await this.contribuintes;
+                tcontribuintes.splice(tcontribuintes.id, 1);
+            }
+        }
+
+        class ContribuintesStoreFetch extends ContribuintesStoreAbstrato {
+            constructor(url) {
+                super();
+                this.url = url;
+            }
+            async inserir(contribuinte) {
+                let response = await fetch(this.url, {
+                    method: 'post',     
+                    body: new URLSearchParams(contribuinte), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 201) {
+                    let novocontribuinte = await response.json();
+                    contribuinte.id = novocontribuinte.id;
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+            async listar() {
+                let response = await fetch(this.url);
+                return await response.json();
+            }
+            async procurarPorId(id) {
+                let response = await fetch(this.url + '/' + id);
+                console.log(response)
+                return await response.json();
+            }
+
+            async apagar(id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'delete'
+                });
+            }
+
+            async alterar(contribuinte, id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'put', 
+                    body: new URLSearchParams(contribuinte), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 200) {
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+
+        }
+
+        async function limpaCampos() {
+            let form = document.querySelector('form');
+            form.nome.value = '';
+            form.fone.value = '';
+            form.email.value = '';
+            form.senha.value = '';
+            form.permissao.value = '';
+            form.situacao.value = '';
+        }
+        let botaoGravar = 1;
+        let idcontribuinteAlterar = -1
+
+        // let contribuintesStore = new contribuintesStoreArray();
+        let ContribuintesStore = new ContribuintesStoreFetch('http://localhost:3000/contribuintes');
+
+        async function processaForm(form) {
+            let nome = form.nome.value;
+            let fone = form.fone.value;
+            let email = form.email.value;
+            let senha = form.senha.value;
+            let permissao = form.permissao.value;
+            let situacao = form.situacao.value;
+            try {
+                if (botaoGravar==1){
+                    await contribuintesStore.inserir({nome, fone, email, senha, permissao, situacao});
+                }else{
+                    let novosDados = {nome, fone, email, senha, permissao, situacao};
+                    await ContribuintesStore.alterarDados(idcontribuinteAlterar, novosDados);
+                    botaoGravar = 1;
+                }
+                limpaCampos()
+                mostrarLista();
+            } catch(erro) {
+                alert(erro);
+            }
+        }
+
+        async function alterar(id) {
+            console.log(id);
+            let contribuinte = await contribuintesStore.procurarPorId(id);
+            console.log(contribuinte);
+            let form = document.querySelector('form');
+            form.nome.value = contribuinte.nome;
+            form.fone.value = contribuinte.fone;
+            form.email.value = contribuinte.email;
+            form.senha.value = contribuinte.senha;
+        }
+
+        async function apagar(idcontribuinte){
+            console.log('entrou na função apagar')
+            console.log('id do contribuintes dentro da função apagar')
+            console.log(idcontribuinte);
+            await contribuintesStore.apagar(idcontribuinte);
+            mostrarLista();
+        }
+
+        mostrarLista();
+    
+    </script>
+
+    <%- include('rodape') %>
+</body>
+</html>

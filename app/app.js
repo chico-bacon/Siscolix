@@ -7,6 +7,10 @@ const port = 3000;
 const mysql =  require('mysql2/promise');
 require('dotenv').config();
 
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: false }));
+
 const UsuariosSQLStore = require('./models/usuariosSQLStore');
 const UsuarioController = require('./controllers/usuarioController');
 
@@ -22,6 +26,14 @@ const usuarioController = new UsuarioController(usuarioSQLStore);
 
 
 //ROTAS DE GERENCIAMENTO DE USUARIOS
+
+app.get('/', (req, res) => {
+    res.render('index')
+})
+
+app.get('/admin', (req, res) => {
+    res.render('areaRestrita');
+})
 
 app.get('/users', (req, res) => {
     usuarioController.listar(req, res);
