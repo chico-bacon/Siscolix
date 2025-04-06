@@ -27,7 +27,7 @@ class UsuarioSQLStore {
                 situacao) 
                 values(?, ?, ?, ?, ?, ?, ?);`;
 
-            const [resposta] = await conexao.execute(sql, [usuario.nome, usuario.phone, usuario.email, usuario.login, usuario.senha, usuario.nivel, usuario.situacao]);
+            const [resposta] = await this.conexao.execute(sql, [usuario.nome, usuario.phone, usuario.email, usuario.login, usuario.senha, usuario.nivel, usuario.situacao]);
 
             console.log(resposta);
 
@@ -38,7 +38,7 @@ class UsuarioSQLStore {
 
     async alterar(id, usuario) {
         try {
-            let sql = `UPDATE usuario SET nome=?, phone=?, email=?, senha=?, nivel=?, situacao=? WHERE id=?`;
+            let sql = `UPDATE usuarios SET nome=?, phone=?, email=?, senha=?, nivel=?, situacao=? WHERE id=?`;
             console.log(sql);
             const [results, fields] = await this.conexao.query(sql, [
                 usuario.nome,

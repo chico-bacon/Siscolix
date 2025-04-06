@@ -27,6 +27,8 @@ const connection = await mysql.createConnection({
     database: process.env.DB
 });
 
+//console.log('ConnectionConfig: ', connection);
+
 const usuarioSQLStore = new UsuariosSQLStore(connection);
 const contribuinteSQLStore = new ContribuinteSQLStore(connection);
 const chamadoSQLStore = new ChamadoSQLStore(connection);
@@ -46,88 +48,88 @@ app.get('/admin', (req, res) => {
     res.render('areaRestrita');
 })
 
-app.get('/users', (req, res) => {
+app.get('/usuarios', (req, res) => {
     usuarioController.listar(req, res);
 })
 
-app.get('/users/:id', (req, res) => {
+app.get('/usuarios/:id', (req, res) => {
     usuarioController.ver(req, res);
 })
 
-app.post('/users', (req, res) => {
+app.post('/usuarios', (req, res) => {
     usuarioController.inserir(req, res);
 })
 
-app.put('/users/:id', (req, res) => {
-    res.send('Atualizando Usuario Identificado por Id');
+app.put('/usuarios/:id', (req, res) => {
+    usuarioController.alterar(req, res);
 })
 
-app.delete('/users/:id', (req, res) => {
-    res.send('Deletando Usuarios Identificado por Id');
+app.delete('/usuarios/:id', (req, res) => {
+    usuarioController.apagar(req, res);
 })
 
 //ROTAS DE GERENCIAMENTO DE CONTRIBUINTES
 
 app.get('/contribuintes', (req, res) => {
-    res.send('Retornando contribuinte');
+    contribuinteController.listar(req, res);
 })
 
 app.get('/contribuintes/:id', (req, res) => {
-    res.send('Retornando contribuinte Identificado por Id');
+    contribuinteController.ver(req, res);
 })
 
 app.post('/contribuintes', (req, res) => {
-    res.send('Adicionando contribuinte na base de dados');
+    contribuinteController.inserir(req, res);
 })
 
 app.put('/contribuintes/:id', (req, res) => {
-    res.send('Atualizando contribuintes Identificado por Id');
+    contribuinteController.alterar(req, res);
 })
 
 app.delete('/contribuintes/:id', (req, res) => {
-    res.send('Deletando contribuintes Identificado por Id');
+    contribuinteController.apagar(req, res);
 })
 
 //ROTAS DE GERENCIAMENTO DE NOTICIAS
 app.get('/noticias', (req, res) => {
-    res.send('Retornando noticias');
+    noticiaController.listar(req, res);
 })
 
 app.get('/noticias/:id', (req, res) => {
-    res.send('Retornando noticia Identificada por Id');
+    noticiaController.ver(req, res);
 })
 
 app.post('/noticias', (req, res) => {
-    res.send('Adicionando noticias na base de dados');
+    noticiaController.inserir(req, res);
 })
 
 app.put('/noticias/:id', (req, res) => {
-    res.send('Atualizando noticia Identificada por Id');
+    noticiaController.alterar(req, res);
 })
 
 app.delete('/noticias/:id', (req, res) => {
-    res.send('Deletando noticia Identificada por Id');
+    noticiaController.apagar(req, res);
 })
 
 //ROTA DE GERENCIAMENTO DE CHAMADOS
 app.get('/chamados', (req, res) => {
-    res.send('Retornando chamados');
+    chamadoController.listar(req, res);
 })
 
 app.get('/chamados/:id', (req, res) => {
-    res.send('Retornando chamado Identificado por Id');
+    chamadoController.ver(req, res);
 })
 
 app.post('/chamados', (req, res) => {
-    res.send('Adicionando chamados na base de dados');
+    chamadoController.inserir(req, res);
 })
 
 app.put('/chamados/:id', (req, res) => {
-    res.send('Atualizando chamado Identificado por Id');
+    chamadoController.alterar(req, res);
 })
 
 app.delete('/chamados/:id', (req, res) => {
-    res.send('Deletando chamado Identificado por Id');
+    chamadoController.apagar(req, res);
 })
 
 

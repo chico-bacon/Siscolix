@@ -26,7 +26,7 @@ class ContribuinteSQLStore {
             ) 
             values(?, ?, ?, ?, ?);`;
 
-            const [resposta] = await conexao.execute(sql, [contribuinte.nome, contribuinte.phone, contribuinte.email, contribuinte.login, contribuinte.senha, contribuinte.situacao]);
+            const [resposta] = await this.conexao.execute(sql, [contribuinte.nome, contribuinte.phone, contribuinte.email, contribuinte.login, contribuinte.senha, contribuinte.situacao]);
 
             console.log(resposta);
 

@@ -27,7 +27,7 @@ class chamadoSQLStore {
             ) 
             values(?, ?, ?, ?, ?, ?);`;
 
-            const [resposta] = await conexao.execute(sql, [chamado.id_contribuinte, chamado.data_hora, chamado.tipo, chamado.observacao, chamado.localizacao, chamado.imagem]);
+            const [resposta] = await this.conexao.execute(sql, [chamado.id_contribuinte, chamado.data_hora, chamado.tipo, chamado.observacao, chamado.localizacao, chamado.imagem]);
 
             console.log(resposta);
 

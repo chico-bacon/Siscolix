@@ -27,7 +27,7 @@ class NoticiaSQLStore {
                 ) 
             values(?, ?, ?, ?, ?, ?);`;
 
-            const [resposta] = await conexao.execute(sql, [noticia.situacao, noticia.tipo, noticia.manchete, noticia.data_publicacao, noticia.conteudo, noticia.imagem]
+            const [resposta] = await this.conexao.execute(sql, [noticia.situacao, noticia.tipo, noticia.manchete, noticia.data_publicacao, noticia.conteudo, noticia.imagem]
             );
 
             console.log(resposta);

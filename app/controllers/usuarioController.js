@@ -30,8 +30,10 @@ class UsuarioController {
     }
 
     async alterar(request, response) {
+        const { nome, phone, email, nivel, situacao, senha } = request.body
+
         let id = request.params.id
-        let usuario = new Usuario(nome.request.body, phone.request.body, email.request.body, nivel.request.body, situacao.request.body);
+        let usuario = new Usuario(nome, phone, email, nivel, situacao, senha);
         await this.UsuarioSQLStore.alterar(id, usuario);
         response.send(usuario);
     }
