@@ -13,6 +13,12 @@ app.use(express.urlencoded({ extended: false }));
 
 const UsuariosSQLStore = require('./models/usuariosSQLStore');
 const UsuarioController = require('./controllers/usuarioController');
+const ContribuinteSQLStore = require('./models/contribuintesSQLStore');
+const ContribuinteController = require('./controllers/contribuinteController');
+const ChamadoSQLStore = require('./models/chamadosSQLStore');
+const ChamadoController = require('./controllers/chamadoController');
+const NoticiaSQLStore = require('./models/noticiasSQLStore');
+const NoticiaController = require('./controllers/noticiaController');
 
 const connection = await mysql.createConnection({
     host: process.env.HOST,
@@ -22,8 +28,13 @@ const connection = await mysql.createConnection({
 });
 
 const usuarioSQLStore = new UsuariosSQLStore(connection);
+const contribuinteSQLStore = new ContribuinteSQLStore(connection);
+const chamadoSQLStore = new ChamadoSQLStore(connection);
+const noticiaSQLStore = new NoticiaSQLStore(connection);
 const usuarioController = new UsuarioController(usuarioSQLStore);
-
+const contribuinteController = new ContribuinteController(contribuinteSQLStore);
+const chamadoController = new ChamadoController(chamadoSQLStore);
+const noticiaController = new NoticiaController(noticiaSQLStore);
 
 //ROTAS DE GERENCIAMENTO DE USUARIOS
 
@@ -40,7 +51,7 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/users/:id', (req, res) => {
-    res.send('Retornando Usuario Identificado por Id');
+    usuarioController.ver(req, res);
 })
 
 app.post('/users', (req, res) => {

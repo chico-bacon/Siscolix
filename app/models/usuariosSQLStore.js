@@ -38,10 +38,9 @@ class UsuarioSQLStore {
 
     async alterar(id, usuario) {
         try {
-            let connection = await this.conectar();
             let sql = `UPDATE usuario SET nome=?, phone=?, email=?, senha=?, nivel=?, situacao=? WHERE id=?`;
             console.log(sql);
-            const [results, fields] = await connection.query(sql, [
+            const [results, fields] = await this.conexao.query(sql, [
                 usuario.nome,
                 usuario.phone,
                 usuario.email,
@@ -58,10 +57,9 @@ class UsuarioSQLStore {
 
     async apagar(id) {
         try {
-            let connection = await this.conectar();
             let sql = `DELETE FROM usuarios where id=?`;
             console.log(sql);
-            const [results, fields] = await connection.query(sql, [
+            const [results, fields] = await this.conexao.query(sql, [
                 id
             ]);
         } catch (err) {
@@ -72,8 +70,7 @@ class UsuarioSQLStore {
 
     async ver(id) {
         try {
-            let connection = await this.conectar();
-            const [results, fields] = await connection.query(
+            const [results, fields] = await this.conexao.query(
                 'SELECT * FROM `usuarios` WHERE id=?',
                 [id]
             );
@@ -87,8 +84,7 @@ class UsuarioSQLStore {
 
     async procurarPorNome(nomePesquisa) {
         try {
-            let connection = await this.conectar();
-            const [results, fields] = await connection.query(
+            const [results, fields] = await this.conexao.query(
                 'SELECT * FROM `usuarios` WHERE nome=?',
                 [nomePesquisa]
             );

@@ -7,7 +7,7 @@ class UsuarioController {
     segredo = process.env.SEGREDO;
 
     constructor(UsuarioSQLStore) {
-        this.UsuarioSQLStore =UsuarioSQLStore;
+        this.UsuarioSQLStore = UsuarioSQLStore;
     }
 
     async listar(request, response) {
