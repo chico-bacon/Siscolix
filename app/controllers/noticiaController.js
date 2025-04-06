@@ -28,8 +28,10 @@ class NoticiaController {
     }
 
     async alterar(request, response) {
+        const { tipo, situacao, manchete, data_publicacao, conteudo, imagem  } = request.body;
+
+        let noticia = new Noticia(tipo, situacao, manchete, data_publicacao, conteudo, imagem);
         let id = request.params.id
-        let noticia = new Noticia(tipo.request.body, situacao.request.body, manchete.request.body, data_publicacao.request.body, conteudo.request.body, imagem.request.body);
         await this.NoticiaSQLStore.alterar(id, noticia);
         response.send(noticia);
     }

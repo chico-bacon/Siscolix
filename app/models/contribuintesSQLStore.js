@@ -21,12 +21,12 @@ class ContribuinteSQLStore {
             nome,
             phone,
             email,
-            senha,
-            situacao
+            situacao,
+            senha
             ) 
             values(?, ?, ?, ?, ?);`;
 
-            const [resposta] = await this.conexao.execute(sql, [contribuinte.nome, contribuinte.phone, contribuinte.email, contribuinte.login, contribuinte.senha, contribuinte.situacao]);
+            const [resposta] = await this.conexao.execute(sql, [contribuinte.nome, contribuinte.phone, contribuinte.email, contribuinte.situacao, contribuinte.senha]);
 
             console.log(resposta);
 
@@ -37,7 +37,7 @@ class ContribuinteSQLStore {
 
     async alterar(id, contribuinte) {
         try {
-            let sql = `UPDATE contribuinte SET nome=?, phone=?, email=?, senha=?, situacao=? WHERE id=?`;
+            let sql = `UPDATE contribuintes SET nome=?, phone=?, email=?, senha=?, situacao=? WHERE id=?`;
             console.log(sql);
             const [results, fields] = await this.conexao.query(sql, [
                 contribuinte.nome,

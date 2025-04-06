@@ -1,10 +1,10 @@
 class Contribuinte {
-    constructor (nome, phone, email, senha, situacao) {
+    constructor (nome, phone, email, situacao, senha) {
         this.nome = nome;
         this.phone = phone;
         this.email = email;
-        this.senha = senha;
         this.situacao = situacao;
+        this.senha = senha;
     }
 
 }

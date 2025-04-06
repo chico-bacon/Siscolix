@@ -17,12 +17,12 @@ class ContribuinteController {
 
     async inserir(request, response) {
         try {
-            const { nome, phone, email, situacao, login, senha } = request.body;
+            const { nome, phone, email, situacao, senha } = request.body;
 
-            let contribuinte = new Contribuinte(nome, phone, email, situacao, login);
+            let contribuinte = new Contribuinte(nome, phone, email, situacao); 
             contribuinte.senha = senha;
             console.log("Objeto:", contribuinte);
-            await this.contribuinteSQLStore.inserir(contribuinte);
+            await this.ContribuinteSQLStore.inserir(contribuinte);
             response.status(201).json(contribuinte);
         } catch (e) {
             response.status(400).send('Erro: ' + e.message);
@@ -30,15 +30,17 @@ class ContribuinteController {
     }
 
     async alterar(request, response) {
+        const { nome, phone, email, situacao, senha } = request.body;
+
+        let contribuinte = new Contribuinte(nome, phone, email, situacao); 
         let id = request.params.id
-        let contribuinte = new Contribuinte(nome.request.body, phone.request.body, email.request.body, situacao.request.body);
         await this.ContribuinteSQLStore.alterar(id, contribuinte);
         response.send(contribuinte);
     }
 
     async apagar(request, response) {
         let id = request.params.id
-        await this.contribuinteSQLStore.apagar(id);
+        await this.ContribuinteSQLStore.apagar(id);
         response.send();
     }
 

@@ -6,11 +6,11 @@ class ChamadoController {
     segredo = process.env.SEGREDO;
 
     constructor(ChamadoSQLStore) {
-        this.ChamadoSQLStore =ChamadoSQLStore;
+        this.ChamadoSQLStore = ChamadoSQLStore;
     }
 
     async listar(request, response) {
-        let chamados = await this.ChamadosQLStore.listar();
+        let chamados = await this.ChamadoSQLStore.listar();
         response.json(chamados);
     }
 
@@ -28,8 +28,10 @@ class ChamadoController {
     }
 
     async alterar(request, response) {
+        const { id_contribuinte, data_hora, tipo, observacao, localizacao, imagem } = request.body;
+
+        let chamado = new Chamado(id_contribuinte, data_hora, tipo, observacao, localizacao, imagem);
         let id = request.params.id
-        let chamado = new Chamado(id_contribuinte.request.body, data_hora.request.body, tipo.request.body, observacao.request.body, localizacao.request.body, imagem.request.body);
         await this.ChamadoSQLStore.alterar(id, chamado);
         response.send(chamado);
     }
