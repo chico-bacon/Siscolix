@@ -45,8 +45,14 @@ class ContribuinteController {
     }
 
     async ver(request, response) {
-        let id = request.params.id
+        let id = request.params.id;
         let contribuinte = await this.ContribuinteSQLStore.ver(id);
+        response.json(contribuinte);
+    }
+
+    async procurarPorEmail(request, response) {
+        let email = request.body.email;
+        let contribuinte = await this.ContribuinteSQLStore.procurarPorEmail(email);
         response.json(contribuinte);
     }
 
@@ -55,16 +61,19 @@ class ContribuinteController {
     }
 
     async login(request, response) {
-        let nome = request.body.nome;
+        let email = request.body.email;
         let senha = request.body.senha;
-        let contribuinte = await this.ContribuinteSQLStore.procurarPorNome(nome);
+        console.log(email);
+        console.log(senha);
+        let contribuinte = new Contribuinte(await this.ContribuinteSQLStore.procurarPorEmail(email));
+        //let contribuinte = await this.ContribuinteSQLStore.procurarPorEmail(email);
         console.log({contribuinte});
-        if (contribuinte) {
-            if (contribuinte.compararSenha(senha)) {
-                let token = jwt.sign({...contribuinte}, this.segredo);
-                response.cookie('token', token, {httpOnly: true, maxAge: 86400000});
-                response.json({ok: true});
-                return
+        if (contribuinte.compararSenha(senha)) {
+            if (confirma_senha) {
+                /*let token = jwt.sign({...contribuinte}, this.segredo);
+                response.cookie('token', token, {httpOnly: true, maxAge: 86400000});*/
+                response.render('aberturachamados');
+                //response.json({ok: true});
             }
         } else {
             new Contribuinte('', '', 'a').compararSenha('b');

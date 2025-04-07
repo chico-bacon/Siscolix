@@ -1,0 +1,211 @@
+<body>
+    <%- include('cabecalho') %>
+    <main class="main_contribuintes">
+        <div class="div_frameCadastroContribuintes">
+            <section class="sessao_cadastroUsuarios">
+                <div id="div_tituloFormularioUsuarios" class="div_tituloFormularioUsuarios">
+                    <h2>ABERTURA DE CHAMADOS</h2>
+                </div>
+                <div class="div_formularioUsuarios">
+                    <form id='form_aberturachamados' action="/aberturachamados" method="post" onsubmit="event.preventDefault(); processaForm(this);">
+                        <div class="div_campoForm">
+                            <label for="tipoChamado">Tipo Chamado</label>
+                            <select name="tipoChamado" id="tipoChamado" size="1">
+                                <option value="1">Coleta de Poda</option>
+                                <option value="2">Coleta de Entulho</option>
+                                <option value="3">Coleta de Moveis / Eletrônicos</option>
+                                <option value="4">Animais Mortos</option>
+                                <option value="5">Limpeza Containner</option>
+                            </select>
+                        </div>
+                        <div class="div_campoForm">
+                            <label for="obsercacao">Observações </label>
+                            <textarea name="obsercacao" id="obsercacao" cols="60" rows="03"></textarea>
+                        </div>
+                        <div class="div_campoForm"> 
+                            <label for="endereco">Endereço Completo</label>
+                            <input type="text" name="endereco" id="endereco">
+                        </div>
+                        <div class="div_campoForm"> 
+                            <label for="pontoreferencia">Ponto de Referência</label>
+                            <input type="text" name="pontoreferencia" id="pontoreferencia">
+                        </div>
+                        <div class="div_Principalfoto">
+                            <div class="div_foto">
+                                <label for="">Foto</label>
+                                <div class="div_img_foto">
+                                    <img src="#" id="img_foto" class="img_foto">
+                                </div>
+                                <div class="campoForm">
+                                </div>
+                            </div>
+                            <input type="file" accept="image/png,image/jpeg,image/jpg,image"  id="f_foto" name="f_foto">
+                        </div>
+                        <div class="div_rodapeFormularioUsuarios">
+                            <button id="botao_gravar" class="botao_padrao">Gravar</button>
+                        </div> 
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        class AberturachamadosStoreAbstrato {
+            async procurarPorId(id) {
+                let aberturachamados = await this.listar(); 
+                try {
+                    return aberturachamados.filter(p => p.id == id)[0];
+                } catch {
+                    return null;
+                }
+            }
+        }
+
+        class AberturachamadosStoreArray extends AberturachamadosStoreAbstrato {
+            aberturachamados = [];
+            async inserir(chamado) {
+                this.aberturachamados.push(chamado);
+                chamado.id = this.aberturachamados.length;
+            }
+            async listar() {
+                return this.aberturachamados;
+            }
+            async alterarDados(id, novosDados){
+                 this.aberturachamados.forEach(chamado =>{
+                    if (chamado.id==id){
+                        let id_contribuinte=''
+                        let data_abertura_chamado = 'Date'
+                        chamado.id_contribuinte=novosDados.id_contribuinte;
+                        chamado.tipo_chamado=novosDados.tipo_chamado;
+                        chamado.observacao=novosDados.observacao;
+                        chamado.localizacao=novosDados.localizacao;
+                        chamado.imagem=novosDados.imagem;
+                    };
+                 });
+            }
+            async apagar(id){
+                let taberturachamados = await this.aberturachamados;
+                taberturachamados.splice(taberturachamados.id, 1);
+            }
+        }
+
+        class AberturachamadosStoreFetch extends AaberturachamadosStoreAbstrato {
+            constructor(url) {
+                super();
+                this.url = url;
+            }
+            async inserir(chamado) {
+                let response = await fetch(this.url, {
+                    method: 'post',     
+                    body: new URLSearchParams(chamado), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 201) {
+                    let novochamado = await response.json();
+                    chamado.id = novochamado.id;
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+            async listar() {
+                let response = await fetch(this.url);
+                return await response.json();
+            }
+            async procurarPorId(id) {
+                let response = await fetch(this.url + '/' + id);
+                console.log(response)
+                return await response.json();
+            }
+
+            async apagar(id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'delete'
+                });
+            }
+
+            async alterar(chamado, id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'put', 
+                    body: new URLSearchParams(chamado), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 200) {
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+
+        }
+
+
+        async function limpaCampos() {
+            // let id_contribuinte=''
+            // let data_abertura_chamado = 'Date'
+            let form = document.querySelector('form');
+            form.tipochamado.value = '';
+            form.observacao.value = '';
+            form.localizacao.value = '';
+            form.imagem.value = '';
+        }
+        let botaoGravar = 1;
+        let idchamadoAlterar = -1
+
+        // let AberturachamadosStore = new AberturachamadosStoreArray();
+        let AberturachamadosStore = new AberturachamadosStoreFetch('http://localhost:3000/aberturachamados');
+
+
+        async function processaForm(form) {
+            let id_contribuinte= 'id_contribuinte'
+            let data_abertura_chamado = 'data_abertura_chamado'
+            let tipo_chamado= form.tipo_chamado.value;
+            let observacao = form.observacao.value;
+            let localizacao = form.localizacao.value;
+            let imagemsituacao = form.imagem.value;
+            try {
+                if (botaoGravar==1){
+                    await AberturachamadosStore.inserir({nome, fone, email, senha, permissao, situacao});
+                }else{
+                    let novosDados = {nome, fone, email, senha, permissao, situacao};
+                    await AberturachamadosStore.alterarDados(idchamadoAlterar, novosDados);
+                    botaoGravar = 1;
+                }
+                limpaCampos()
+                mostrarLista();
+            } catch(erro) {
+                alert(erro);
+            }
+        }
+
+        async function alterar(id) {
+            console.log(id);
+            let chamado = await AberturachamadosStore.procurarPorId(id);
+            console.log(chamado);
+            // let form = document.querySelector('form');
+            let form = document.querySelector('form');
+            let id_contribuinte=''
+            let data_abertura_chamado = 'Date'
+            form.tipochamado.value = '';
+            form.observacao.value = '';
+            form.localizacao.value = '';
+            form.imagem.value = '';
+        }
+
+        async function apagar(idchamado){
+            await AberturachamadosStore.apagar(idchamado);
+            mostrarLista();
+        }
+
+        mostrarLista();
+    
+    </script>
+
+    <%- include('rodape') %>
+</body>
+</html>

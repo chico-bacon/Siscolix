@@ -80,6 +80,21 @@ class ContribuinteSQLStore {
         }
     }
 
+    async procurarPorEmail (email) {
+        try {
+            const [resultado] = await this.conexao.query(
+                `SELECT * FROM contribuintes WHERE email=?`, [email]
+            );
+            return resultado; 
+        } catch(erro) {
+            console.log(erro);
+        }
+
+    }
+
+
+
+
 }
 
 module.exports = ContribuinteSQLStore;

@@ -44,8 +44,20 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 
+app.get('/logincontribuinte', (req, res) => {
+    res.render('logincontribuinte');
+})
+
 app.get('/admin', (req, res) => {
     res.render('areaRestrita');
+})
+
+app.get('/aberturachamados', (req, res) => {
+    res.render('aberturachamados');
+})
+
+app.post('/aberturachamados', (req, res) => {
+    res.render('aberturachamados');
 })
 
 app.get('/usuarios', (req, res) => {
@@ -82,6 +94,10 @@ app.post('/contribuintes', (req, res) => {
     contribuinteController.inserir(req, res);
 })
 
+app.post('/contribuintes/login', (req, res) => {
+    contribuinteController.login(req, res);
+})
+
 app.put('/contribuintes/:id', (req, res) => {
     contribuinteController.alterar(req, res);
 })
@@ -112,6 +128,7 @@ app.delete('/noticias/:id', (req, res) => {
 })
 
 //ROTA DE GERENCIAMENTO DE CHAMADOS
+
 app.get('/chamados', (req, res) => {
     chamadoController.listar(req, res);
 })

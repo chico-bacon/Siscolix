@@ -6,10 +6,11 @@
             <h1>FAÇA SEU LOGIN</h1>
         </div>
         <div class="div_formularioLogin">
-            <form id='form_logincontribuinte' action="/aberturachamados" method="post"  onsubmit="event.preventDefault(); processaForm(this);">
+            <!--<form id='form_logincontribuinte' action="/contribuintes/login" method="post"  onsubmit="event.preventDefault(); processaForm(this);">-->
+            <form id='form_logincontribuinte' action="/contribuintes/login" method="post">
                 <div class="div_campoForm">
-                    <label for="username">Usuário</label>
-                    <input type="text" name="username" id="username"/>
+                    <label for="email">Usuário</label>
+                    <input type="text" name="email" id="email"/>
                 </div>
                 <div class="div_campoForm">
                     <label for="senha">Senha</label>
@@ -21,6 +22,25 @@
             </form>
         </div>
     </main>
+    
+    <script>
+        async function processaForm(form) {
+            let username = form.username.value;
+            let senha = form.senha.value;
+            try {
+                if (botao_login==1){
+                    await usuariosStore.inserir({username, senha});
+                }else{
+                    console.log('Acesso Negado!');
+                }
+                limpaCampos()
+                mostrarLista();
+            } catch(erro) {
+                alert(erro);
+            }
+        }
+    </script>
+
     <%- include('rodape') %>
 </body>
 </html>
